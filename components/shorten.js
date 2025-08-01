@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Shorten() {
   const [longUrl, setLongUrl] = useState("");
@@ -7,7 +9,10 @@ export default function Shorten() {
   const [generatedUrl, setGeneratedUrl] = useState("");
 
   const handleGenerate = async () => {
-    if (!longUrl) return alert("Please enter a valid URL.");
+    if (!longUrl) {
+      toast.error("Please enter a valid URL.");
+      return;
+    }
 
     try {
       const response = await fetch("/api/generate", {
@@ -25,12 +30,13 @@ export default function Shorten() {
         setGeneratedUrl(`http://localhost:3000/${data.slug || customSlug}`);
         setLongUrl("");
         setCustomSlug("");
+        toast.success("Short URL generated successfully!");
       } else {
-        alert(data.message || "Something went wrong.");
+        toast.error(data.message || "Something went wrong.");
       }
     } catch (error) {
       console.error("Error creating short URL:", error);
-      alert("Server error. Please try again.");
+      toast.error("Server error. Please try again.");
     }
   };
 
@@ -39,6 +45,7 @@ export default function Shorten() {
       id="shorten"
       className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center px-4"
     >
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <div className="bg-orange-500 rounded-xl shadow-xl w-full max-w-2xl p-8 space-y-6 border border-orange-400 text-white">
         <h1 className="text-3xl font-bold text-center ">Shorten Your URL</h1>
 
